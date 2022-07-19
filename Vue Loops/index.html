@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Vue 3 Basics</title>
+        <!-- just to see box for experiment purpose of v-show and v-if -->
+        <style>
+            .box {
+                background-color: purple;
+                height: 200px;
+                width: 200px;
+            }
+            .box.two{
+                background-color: red;
+            }
+            .box.three{
+                background-color: green;
+            }
+            /* v-cloak for waiting until vue is ready to display and doesnt show variables and such */
+            [v-cloak] {
+                display: none;
+            }
+            input {
+                margin: 10px;
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- v-cloack used here -->
+        <div id="app" v-cloak>
+            <!-- must be defined before mounting and after app variable is created -->
+            <login-form />
+
+            <hr />
+
+            <!-- <button @click="isVisible = !isVisible">Show/Hide Box</button>  <- same thing as below -->
+            <!-- could add event modifier like v-on:click.right to listen only for right clicks and you can chain
+            multiple modifiers back to back -->
+            <button v-on:click="toggleBox()">Show/Hide Box</button>
+
+            <!-- v-show doesnt show content inside div but div is still there v-if removes entire div -->
+            <div v-if="isVisible" class="box"></div> <!-- Purple -->
+            
+
+        <script src="https://unpkg.com/vue@next"></script>
+
+        <script>
+            let app = Vue.createApp({
+                data() {
+                    return{
+                        greeting: 'Hello Vue 3!',
+                        isVisible: false
+                    }
+                },
+                methods: {
+                    toggleBox() {
+                        this.isVisible = !this.isVisible;
+                    },
+                    greet(greeting) {
+                        alert(greeting)
+                    }
+                }
+            })
+
+            app.component('login-form', {
+                template: `
+                    <form @submit.prevent="handleSubmit()">
+                        <h1> {{ title }} </h1>
+
+                        <custom-input 
+                            v-for="(input, i) in inputs"
+                            :key="i"
+                            v-model="input.value" 
+                            v-bind:label="input.label"
+                            :type="input.type" 
+                        />
+
+
+                        <button>Log in</button>
+                    </form>
+                `,
+                components: ['custom-input'],
+                data(){
+                    return{
+                        title: 'Login Form',
+                        inputs: [
+                            {
+                                label: 'Email',
+                                value: '',
+                                type: 'email'
+                            },
+                            {
+                                label: 'Password',
+                                value: '',
+                                type: 'password'
+                            }
+                        ],
+                        email: '',
+                        password: '',
+                        emailLabel: 'Email',
+                        passwordLabel: 'Password'
+                    }
+                },
+                methods: {
+                    handleSubmit(){
+                        alert(this.inputs[0].value + ' ' + this.inputs[1].value)
+                    }
+                }
+            })
+
+            app.component('custom-input',{
+                template: `
+                    <label>
+                        {{ label }}
+                        <input :type="type" v-model="inputValue" />
+                    </label>
+                `,
+                // prop is available because of v-model 'modelValue'
+                props: ['label', 'modelValue', 'type'],
+                computed: {
+                    inputValue: {
+                        get() {
+                            return this.modelValue
+                        },
+                        set(value) {
+                            // emit to parent component, parent has to be listening - v-model listens for update events
+                            this.$emit('update:modelValue', value)
+                        }
+                    }
+                }
+                // data(){
+                //     return{
+                //         inputValue: ''
+                //     }
+                // }
+            })
+            app.mount('#app')
+            /*  vue js app is inside div with id app, dom has access to stuff inside div */
+        </script>
+    </body>
+</html>

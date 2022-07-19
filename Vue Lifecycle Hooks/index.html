@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Vue 3 Basics</title>
+        <!-- just to see box for experiment purpose of v-show and v-if -->
+        <style>
+            .box {
+                background-color: purple;
+                height: 200px;
+                width: 200px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <!-- created and mounted can be good for making API calls and bringing data in to web page before it loads -->
+
+        <div id="app" v-cloak>
+            
+            <button v-on:click="toggleBox()">Show/Hide Box</button>
+
+            <test-box v-if="isVisible"></div> <!-- Purple -->
+        </div>
+
+        <script src="https://unpkg.com/vue@next"></script>
+
+        <script>
+            let app = Vue.createApp({
+                data() {
+                    return{
+                        isVisible: false
+                    }
+                },
+                methods: {
+                    toggleBox() {
+                        this.isVisible = !this.isVisible;
+                    }
+                },
+                updated() {
+                    console.log('main vue app updated')
+                }
+            })
+
+            app.component('test-box', {
+                template: `
+                    <div class="box"></div>
+                `,
+                created() {
+                    console.log('component created')
+                },
+                mounted() {
+                    console.log('component mounted')
+                },
+                unmounted() {
+                    console.log('component unmounted')
+                }
+            })
+            
+            app.mount('#app')
+            /*  vue js app is inside div with id app, dom has access to stuff inside div */
+        </script>
+    </body>
+</html>
